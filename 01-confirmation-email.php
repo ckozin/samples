@@ -1,4 +1,16 @@
 <?php
+/*
+ * Portion of code from an online student application system utilizing 
+ * the Swift Mailer library where references are immediately notified 
+ * through email of a student’s application submission. 
+ *
+ * PHP version 5
+ * 
+ * @author     Christine Kozin <ckozin@gmail.com>
+ * @copyright  2013 Questar III BOCES
+*/
+
+
 // Use Swift Mailer library
 require_once '../lib/swift_required.php';
 $appID      = $dbh->lastInsertId('id');

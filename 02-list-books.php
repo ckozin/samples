@@ -1,4 +1,15 @@
 <?php
+/*
+ * Code from a textbook loan application features addition or deletion 
+ * of a book to a user’s cart along with displaying information for each
+ * item in the cart.
+ *
+ * PHP version 5
+ * 
+ * @author     Christine Kozin <ckozin@gmail.com>
+ * @copyright  2013 Questar III BOCES
+*/
+
 mysql_select_db($database_config, $config);
 $term = mysql_real_escape_string($_GET["term"]);
 $pagenum = mysql_real_escape_string($_GET["pagenum"]);
