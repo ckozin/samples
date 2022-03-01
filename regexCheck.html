@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html en="english">
+<head>
+  <title> REGEX FORM</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript">
+
+    function specialCharacters(str) {
+      specialChars = string = /[&\/\\#,+()$~%.'":*?<>{}]/;
+      return specialChars.test(str);
+    }
+
+    function validateForm(){
+      var string = $("input[name='SHORT_NAME']").val();
+      console.log('The initial string' + string);
+
+      // Go through and check validity of text
+      // First trim whitespace at beginning and End
+      stringText = $.trim(string);
+      console.log('input is:' + stringText);
+
+      // replace any double underscore with a single
+      stringText = stringText.replace(/_{2}/gi, '_');
+      console.log('input doublescore is:' + stringText);
+
+      // Check for newline, tab or white-space and replace with single space
+      stringText = stringText.replace(/\s+/g, " ");
+      console.log('input tab, newline and whitespace is:' + stringText);
+
+      string = string.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+
+      // Change the special word characters
+
+      stringText = stringText.replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '')
+      // Disallow control characters
+      if (/[&\/\\#,+()$~%.'":*?<>{}]/.test(stringText) == true){
+        $(".errorMsg").html("Your text cannot contain &\/\\#,+()$~%.'\":*?<>{}]");
+      }
+
+
+
+      $("input[name='SHORT_NAME']").val(stringText);
+    }
+
+  </script>
+
+  </head>
+  <body>
+    <form name="testform" onsubmit="validateForm();">
+      <label for="short_name">Enter the name</label>
+      <input type="text" id = "SHORT_NAME" name= "SHORT_NAME">
+      <span class="errorMsg"></span>
+      <input type="submit" id="formSubmit">Submit</input>
+
+    </form>
+
+    </body>
+
+</html>
