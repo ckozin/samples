@@ -4,55 +4,101 @@
   <title> REGEX FORM</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script type="text/javascript">
-
-    function specialCharacters(str) {
-      specialChars = string = /[&\/\\#,+()$~%.'":*?<>{}]/;
-      return specialChars.test(str);
-    }
-
     function validateForm(){
-      var string = $("input[name='SHORT_NAME']").val();
-      console.log('The initial string' + string);
+      $("span.inputErrorMsg").remove();
+      $(".inputError").removeClass('inputError');
 
-      // Go through and check validity of text
-      // First trim whitespace at beginning and End
-      stringText = $.trim(string);
-      console.log('input is:' + stringText);
+      // Shortname remove any characters outside of [^A-Za-z0-9_-]
+      // Description should remove control characters[\/?<>:";t'][{}]
+      // shortname and description should remove any instances of more than one consecutive _ and replace it with a single
+      // Both should remove leading or trailing whitespace (space, tab, etc.)
+      var checkFields = {
+          "SHORT_NAME" : $("input[name='SHORT_NAME']").val(),
+          "DESCRIPTION" : $("input[name='DESCRIPTION']").val(),
+        }
 
-      // replace any double underscore with a single
-      stringText = stringText.replace(/_{2}/gi, '_');
-      console.log('input doublescore is:' + stringText);
+      $.each(checkFields, function(inputName,inputValue){
+        $(errorMessage).insertAfter($("input[name='"+inputName+"']"));
+        if (typeof inputValue !== 'undefined'&& inputValue !=""){
+          var stringText = inputValue;
+          // Go through and check validity of text
+          // Check for newline, tab or white-space and replace with single space
+          stringText = stringText.replace(/\s+/g, " ");
+          // Trim whitespace at beginning and End
+          stringText = $.trim(stringText);
+          // replace any double underscore with a single
+          stringText = stringText.replace(/_{2}/gi, '_');
+          // Change the special word characters
+          stringText = stringText.replace(/[\u2018\u2019]/g, "'")
+            .replace(/[\u201C\u201D]/g, '')
+          // Description should remove control characters[\/?<>:";t'][{}]
+          $("input[name='"+inputName+"']").val(stringText);
+          short_name_allowed = /[A-Za-z0-9_-]/;
+          description_not_allowed = /[\\\/\?\<\>\:\"\;\'\]\[\{\}]/;
+          if (short_name_allowed.test(stringText) == false && inputName == "SHORT_NAME"){
+            var errorMessage = "<span class=\"inputErrorMsg\">Use only alphanumeric characters (A-Z) and (0-9)</span>";
+          }
+          if (description_not_allowed.test(stringText) == true && inputName == "DESCRIPTION"){
+            var errorMessage = "<span class='inputErrorMsg'>Use characters other than /\\\?<>:\";'][{}</span>";
+          }
+          if (errorMessage){
+            event.preventDefault();
+            $(errorMessage).insertAfter($("input[name='"+inputName+"']"));
+            $("input[name='"+inputName+"']").addClass("inputError");
+          }
+        }
+      });
+  }
+    // Detect submission button or enter key clicked
 
-      // Check for newline, tab or white-space and replace with single space
-      stringText = stringText.replace(/\s+/g, " ");
-      console.log('input tab, newline and whitespace is:' + stringText);
+    $(document).ready(function() {
+      $('form').submit(function(e){
+          validateForm();
+      });
+    });
 
-      string = string.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
-
-      // Change the special word characters
-
-      stringText = stringText.replace(/[\u2018\u2019]/g, "'")
-        .replace(/[\u201C\u201D]/g, '')
-      // Disallow control characters
-      if (/[&\/\\#,+()$~%.'":*?<>{}]/.test(stringText) == true){
-        $(".errorMsg").html("Your text cannot contain &\/\\#,+()$~%.'\":*?<>{}]");
-      }
-
-
-
-      $("input[name='SHORT_NAME']").val(stringText);
-    }
 
   </script>
 
   </head>
   <body>
-    <form name="testform" onsubmit="validateForm();">
-      <label for="short_name">Enter the name</label>
-      <input type="text" id = "SHORT_NAME" name= "SHORT_NAME">
-      <span class="errorMsg"></span>
-      <input type="submit" id="formSubmit">Submit</input>
+    <style type="text/css">
+      .error{
+        font-size: 16px;
+        color: #BF3019;
+        padding: 3px;
+        font-stretch:narrower;
+        font-family: arial;
+        font-weight: bold;
+        font-style: italic;
+      }
+      input.inputError{
+        color: #BF3019 !important;
+        font-weight: bold;
+      }
 
+      .inputErrorMsg {
+        color: #BF3019;
+        font-stretch:narrower;
+        font-family: arial;
+        font-weight: bold;
+        font-style: italic;
+        font-size: 14px;
+        padding-left: 10px;
+      }
+      </style>
+    <form name="testform" action="">
+      <div>
+      <label for="short_name">Enter the name</label>
+      <input type="text" name= "SHORT_NAME">
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <input type = "text" name="DESCRIPTION">
+    </div>
+    <div>
+      <input type="submit" id="formSubmit"></input>
+    </div>
     </form>
 
     </body>
