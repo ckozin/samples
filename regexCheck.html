@@ -50,7 +50,46 @@
           }
         }
       });
+    }
+
+  function validateDescriptionOnly(){
+    $("span.inputErrorMsg").remove();
+
+    // Shortname remove any characters outside of [^A-Za-z0-9_-]
+    // Description should remove control characters[\/?<>:";t'][{}]
+    // shortname and description should remove any instances of more than one consecutive _ and replace it with a single
+    // Both should remove leading or trailing whitespace (space, tab, etc.)
+    inputValue = $("input[name='DESCRIPTION']").val()
+
+    if (typeof inputValue === 'undefined' || inputValue == "" || inputValue == null){
+      event.preventDefault();
+      var errorMessage = "<span class='inputErrorMsg'>*Required field</span>";
+      $(".descError").append(errorMessage);
+    } else {
+      var stringText = inputValue;
+      // Go through and check validity of text
+      // Check for newline, tab or white-space and replace with single space
+      stringText = stringText.replace(/\s+/g, " ");
+      // Trim whitespace at beginning and End
+      stringText = $.trim(stringText);
+      // replace any double underscore with a single
+      stringText = stringText.replace(/_{2}/gi, '_');
+      // Change the special word characters
+      stringText = stringText.replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '')
+      // Description should remove control characters[\/?<>:";t'][{}]
+      $("input[name='"+inputName+"']").val(stringText);
+      description_not_allowed = /[\\\/\?\<\>\:\"\;\'\]\[\{\}]/;
+      if (description_not_allowed.test(stringText) == true && inputName == "DESCRIPTION"){
+        var errorMessage = "<span class='inputErrorMsg'>Use characters other than /\ \\ ? < > : \" ; ' ] [ { }</span>";
+          $(".descError").append(errorMessage);
+      }
+      if (errorMessage){
+        event.preventDefault();
+      }
+    }
   }
+
     // Detect submission button or enter key clicked
     $(document).ready(function() {
       $('form').submit(function(e){
