@@ -2,11 +2,10 @@
 <html en="english">
 <head>
   <title> REGEX FORM</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
   <script type="text/javascript">
     function validateForm(){
       $("span.inputErrorMsg").remove();
-      $(".inputError").removeClass('inputError');
 
       // Shortname remove any characters outside of [^A-Za-z0-9_-]
       // Description should remove control characters[\/?<>:";t'][{}]
@@ -18,8 +17,11 @@
         }
 
       $.each(checkFields, function(inputName,inputValue){
-        $(errorMessage).insertAfter($("input[name='"+inputName+"']"));
-        if (typeof inputValue !== 'undefined'&& inputValue !=""){
+        if (typeof inputValue === 'undefined' || inputValue == "" || inputValue == null){
+          event.preventDefault();
+          var errorMessage = "<span class='inputErrorMsg'>*Required field</span>";
+          inputName == "SHORT_NAME" ? $(".nameError").append(errorMessage) : $(".descError").append(errorMessage);
+        } else {
           var stringText = inputValue;
           // Go through and check validity of text
           // Check for newline, tab or white-space and replace with single space
@@ -36,21 +38,20 @@
           short_name_allowed = /[A-Za-z0-9_-]/;
           description_not_allowed = /[\\\/\?\<\>\:\"\;\'\]\[\{\}]/;
           if (short_name_allowed.test(stringText) == false && inputName == "SHORT_NAME"){
-            var errorMessage = "<span class=\"inputErrorMsg\">Use only alphanumeric characters (A-Z) and (0-9)</span>";
+            var errorMessage = "<span class='inputErrorMsg'>Use only alphanumeric characters (A-Z) and (0-9)</span>";
+            $(".nameError").append(errorMessage);
           }
           if (description_not_allowed.test(stringText) == true && inputName == "DESCRIPTION"){
-            var errorMessage = "<span class='inputErrorMsg'>Use characters other than /\\\?<>:\";'][{}</span>";
+            var errorMessage = "<span class='inputErrorMsg'>Use characters other than /\ \\ ? < > : \" ; ' ] [ { }</span>";
+              $(".descError").append(errorMessage);
           }
           if (errorMessage){
             event.preventDefault();
-            $(errorMessage).insertAfter($("input[name='"+inputName+"']"));
-            $("input[name='"+inputName+"']").addClass("inputError");
           }
         }
       });
   }
     // Detect submission button or enter key clicked
-
     $(document).ready(function() {
       $('form').submit(function(e){
           validateForm();
@@ -88,15 +89,26 @@
       }
       </style>
     <form name="testform" action="">
+      <table>
+        <tr>
+          <td>
+            <label for="short_name">Enter the name</label>
+            <input type="text" name= "SHORT_NAME">
+          </td>
+          <td class="nameError"></td>
+        </tr>
+        <tr>
+          <td>
+            <label for="description">Description</label>
+            <input type = "text" name="DESCRIPTION">
+          </td>
+          <td class="descError"></td>
+        </tr>
+
+
+
+  </table>
       <div>
-      <label for="short_name">Enter the name</label>
-      <input type="text" name= "SHORT_NAME">
-    </div>
-    <div>
-      <label for="description">Description</label>
-      <input type = "text" name="DESCRIPTION">
-    </div>
-    <div>
       <input type="submit" id="formSubmit"></input>
     </div>
     </form>
